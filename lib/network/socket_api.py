@@ -2,6 +2,8 @@ import json
 import socket
 import time
 
+from lib.network import net_request as nr
+
 
 class Socket:
     def __init__(self, port):
@@ -49,3 +51,28 @@ class Socket:
 
     def close(self):
         self.conn.close()
+
+
+def get_socket_answer(port, content, queue_object, ip='127.0.0.1'):
+    """
+    Get answer from microservice by socket
+    :type port: int
+    :param port: microservice port
+    :type ip: str
+    :param ip: microservice ip address
+    :type content: bytes
+    :param content: content to send
+    :type queue.Queue() object
+    :param queue_object: queue object to put answer
+    """
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client.connect((ip, port))
+    client.send(content)
+    resp = client.recv(1024)
+    if resp:
+        queue_object.put(resp)
+    else:  # TODO: fill else if empty/None answer
+        err_answer = nr.make_answer_json(answer_code=nr.answer_codes['failed'],
+                                         body='auth failed')
+        err_answer = json.dumps(err_answer).encode('utf-8')
+        queue_object.put(err_answer)

@@ -1,10 +1,11 @@
-from flask import Flask, request, jsonify
-from threading import Thread
+from flask import Flask, request
 
-import socket
 import json
-import queue
 
+import lib.network.net_request as nr
+from lib.network import net_request
+from lib.network import socket_api as sa
+from lib import thread
 
 app = Flask(__name__)
 
@@ -20,10 +21,10 @@ def auth_request():
     Thread login router
     :return: auth result
     """
+    # print('api/auth')
     content = request.json
-    queued_request = queue.Queue()
-    Thread(target=auth_thread_request, args=(content, queued_request)).start()
-    auth_answer = queued_request.get()
+    auth_answer = thread.run(thread_function=auth_thread_request,
+                             args=content)
     return auth_answer
 
 
@@ -35,14 +36,9 @@ def auth_thread_request(content, queue_res):
     :return:
     """
     content = json.dumps(content).encode('utf-8')
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(('127.0.0.1', 2289))
-    client.send(content)
-    resp = client.recv(1024)
-    if resp:
-        queue_res.put(resp)
-    else:  # TODO: fill else if empty/None answer
-        print('empty')
+    sa.get_socket_answer(port=2289,
+                         content=content,
+                         queue_object=queue_res)
 
 
 @app.route('/api/login', methods=['GET', 'POST'])
@@ -51,10 +47,10 @@ def login_request():
     Thread login router
     :return: auth result
     """
+    # print('api/login')
     content = request.json
-    queued_request = queue.Queue()
-    Thread(target=login_thread_request, args=(content, queued_request)).start()
-    auth_answer = queued_request.get()
+    auth_answer = thread.run(thread_function=login_thread_request,
+                             args=content)
     return auth_answer
 
 
@@ -66,14 +62,9 @@ def login_thread_request(content, queue_res):
     :return:
     """
     content = json.dumps(content).encode('utf-8')
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(('127.0.0.1', 2288))
-    client.send(content)
-    resp = client.recv(1024)
-    if resp:
-        queue_res.put(resp)
-    else:  # TODO: fill else if empty/None answer
-        print('empty')
+    sa.get_socket_answer(port=2288,
+                         content=content,
+                         queue_object=queue_res)
 
 
 # 1. ip:5000/register with json

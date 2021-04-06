@@ -2,8 +2,6 @@ from flask import Flask, request
 
 import json
 
-import lib.network.net_request as nr
-from lib.network import net_request
 from lib.network import socket_api as sa
 from lib import thread
 
@@ -23,12 +21,12 @@ def auth_request():
     """
     # print('api/auth')
     content = request.json
-    auth_answer = thread.run(thread_function=auth_thread_request,
+    auth_answer = thread.run(thread_function=auth_request_thread,
                              args=content)
     return auth_answer
 
 
-def auth_thread_request(content, queue_res):
+def auth_request_thread(content, queue_res):
     """
     Connect login microservice and get result in every thread
     :param content:
@@ -49,12 +47,12 @@ def login_request():
     """
     # print('api/login')
     content = request.json
-    auth_answer = thread.run(thread_function=login_thread_request,
+    auth_answer = thread.run(thread_function=login_request_thread,
                              args=content)
     return auth_answer
 
 
-def login_thread_request(content, queue_res):
+def login_request_thread(content, queue_res):
     """
     Connect login microservice and get result in every thread
     :param content:

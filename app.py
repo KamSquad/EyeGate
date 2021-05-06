@@ -118,6 +118,11 @@ def news_request_thread(content, queue_res):
 #    return fak
 
 
-if __name__ == '__main__':
-    bjoern.run(app, "127.0.0.1", 80)
+def main():
+    bjoern.run(app, "127.0.0.1", 5000)
     # app.run()
+
+
+if __name__ == '__main__':
+    main()
+

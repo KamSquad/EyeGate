@@ -1,7 +1,7 @@
 from flask import Flask, request
 
 import json
-
+import bjoern
 from lib.network import socket_api as sa
 from lib import thread
 
@@ -119,4 +119,5 @@ def news_request_thread(content, queue_res):
 
 
 if __name__ == '__main__':
-    app.run()
+    bjoern.run(app, "127.0.0.1", 80)
+    # app.run()

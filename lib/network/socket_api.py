@@ -1,8 +1,11 @@
 import json
 import socket
+import struct
 import time
-
 from lib.network import net_request as nr
+
+
+block_size = 1024  # block size to send/receive socket messages
 
 
 class Socket:
@@ -31,7 +34,7 @@ class Socket:
 
     def get_data(self):
         while True:
-            data = self.conn.recv(1024)
+            data = self.conn.recv(block_size)
             if not data:
                 break
             return json.loads(data)
@@ -39,7 +42,7 @@ class Socket:
     def get_answer(self, data):
         data = json.dumps(data).encode('utf-8')
         self.sock.send(data)
-        ans = self.sock.recv(1024).decode('utf-8')
+        ans = self.sock.recv(block_size).decode('utf-8')
         if ans != '':
             ans = json.loads(ans)
         return ans
@@ -53,9 +56,10 @@ class Socket:
         self.conn.close()
 
 
-def get_socket_answer(port, content, queue_object, ip='127.0.0.1'):
+def get_socket_answer(port, content, ip='127.0.0.1', queue_object=None, long_answer=False):
     """
     Get answer from microservice by socket
+    :param long_answer: use stream answer receive
     :type port: int
     :param port: microservice port
     :type ip: str
@@ -67,12 +71,41 @@ def get_socket_answer(port, content, queue_object, ip='127.0.0.1'):
     """
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((ip, port))
+    # send request
     client.send(content)
-    resp = client.recv(1024)
-    if resp:
+    # get socket answer
+    if not long_answer:
+        resp = client.recv(block_size)
+    else:
+        resp = recv_msg(client)
+    # set fail answer
+    if not resp:
+        resp = nr.make_answer_json(answer_code=nr.answer_codes['failed'],
+                                   body='empty answer')
+        resp = json.dumps(resp).encode('utf-8')
+
+    if queue_object:
         queue_object.put(resp)
-    else:  # TODO: fill else if empty/None answer
-        err_answer = nr.make_answer_json(answer_code=nr.answer_codes['failed'],
-                                         body='auth failed')
-        err_answer = json.dumps(err_answer).encode('utf-8')
-        queue_object.put(err_answer)
+    else:
+        return resp
+
+
+def recv_msg(sock):
+    # Read message length and unpack it into an integer
+    raw_msg_len = recv_all(sock, 4)
+    if not raw_msg_len:
+        return None
+    msg_len = struct.unpack('>I', raw_msg_len)[0]
+    # Read the message data
+    return recv_all(sock, msg_len)
+
+
+def recv_all(sock, n):
+    # Helper function to recv n bytes or return None if EOF is hit
+    data = bytearray()
+    while len(data) < n:
+        packet = sock.recv(n - len(data))
+        if not packet:
+            return None
+        data.extend(packet)
+    return data

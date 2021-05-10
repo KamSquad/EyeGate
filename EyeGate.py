@@ -4,16 +4,18 @@ import json
 import bjoern
 from lib.network import socket_api as sa
 from lib import thread
+from lib import config
 
 app = Flask(__name__)
+c = config.EnvConfig()
 
 
-@app.route('/status')
+@app.route(c.routes.status)
 def gate_status():
     return 'Status: online'
 
 
-@app.route('/api/auth', methods=['GET', 'POST'])
+@app.route(c.routes.auth, methods=['GET', 'POST'])
 def auth_request():
     """
     Thread login router
@@ -34,10 +36,10 @@ def auth_request_thread(content, queue_res):
     :return:
     """
     content = json.dumps(content).encode('utf-8')
-    sa.get_socket_answer(port=2289, content=content, queue_object=queue_res)
+    sa.get_socket_answer(port=c.m_ports.auth, content=content, queue_object=queue_res)
 
 
-@app.route('/api/login', methods=['GET', 'POST'])
+@app.route(c.routes.login, methods=['GET', 'POST'])
 def login_request():
     """
     Thread login router
@@ -58,10 +60,10 @@ def login_request_thread(content, queue_res):
     :return:
     """
     content = json.dumps(content).encode('utf-8')
-    sa.get_socket_answer(port=2288, content=content, queue_object=queue_res)
+    sa.get_socket_answer(port=c.m_ports.login, content=content, queue_object=queue_res)
 
 
-@app.route('/api/push', methods=['GET', 'POST'])
+@app.route(c.routes.push, methods=['GET', 'POST'])
 def push_request():
     """
     Thread push server router
@@ -82,10 +84,10 @@ def push_request_thread(content, queue_res):
     :return:
     """
     content = json.dumps(content).encode('utf-8')
-    sa.get_socket_answer(port=2283, content=content, queue_object=queue_res)
+    sa.get_socket_answer(port=c.m_ports.push, content=content, queue_object=queue_res)
 
 
-@app.route('/api/news', methods=['GET', 'POST'])
+@app.route(c.routes.news, methods=['GET', 'POST'])
 def news_request():
     """
     Thread push server router
@@ -106,11 +108,11 @@ def news_request_thread(content, queue_res):
     :return:
     """
     content = json.dumps(content).encode('utf-8')
-    sa.get_socket_answer(port=2290, content=content, queue_object=queue_res, long_answer=True)
+    sa.get_socket_answer(port=c.m_ports.news, content=content, queue_object=queue_res, long_answer=True)
 
 
 # 1. ip:5000/register with json
-# 2. ip:5000/'<client-id>'/
+# 2. ip:5000/'<client-id>'/M_PORT_AUTH", default=2289
 
 
 # @app.route('/api/timetable/<string:univer>/<string:fak>')
@@ -119,8 +121,9 @@ def news_request_thread(content, queue_res):
 
 
 def main():
-    bjoern.run(app, "127.0.0.1", 5000)
-    # app.run()
+    c.print_params()
+    print(f'Server started on {c.gate.allowed_hosts}:{c.gate.port}.. ')
+    bjoern.run(app, c.gate.allowed_hosts, c.gate.port)
 
 
 if __name__ == '__main__':

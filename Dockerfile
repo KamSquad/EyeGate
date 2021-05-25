@@ -10,7 +10,9 @@ ENV PYTHONUNBUFFERED 1
 # install dependencies
 RUN pip install --upgrade pip
 RUN apt update -y && apt install -y libev-dev
-COPY requirements.txt .
-RUN pip install -r requirements.txt
 # copy project
-COPY docker .
+RUN git clone https://github.com/KamSquad/EyeGate.git .
+# COPY requirements.txt .
+RUN pip install -r ./requirements.txt
+# set env
+COPY .env .

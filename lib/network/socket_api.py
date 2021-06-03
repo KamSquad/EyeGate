@@ -69,15 +69,20 @@ def get_socket_answer(port, content, ip='127.0.0.1', queue_object=None, long_ans
     :type queue.Queue() object
     :param queue_object: queue object to put answer
     """
+    resp = None
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect((ip, port))
-    # send request
-    client.send(content)
-    # get socket answer
-    if not long_answer:
-        resp = client.recv(block_size)
-    else:
-        resp = recv_msg(client)
+    try:
+        client.connect((ip, port))
+        # send request
+        client.send(content)
+        # get socket answer
+        if not long_answer:
+            resp = client.recv(block_size)
+        else:
+            resp = recv_msg(client)
+    # exception on socket connect error
+    except Exception as ex:
+        print(ex)
     # set fail answer
     if not resp:
         resp = nr.make_answer_json(answer_code=nr.answer_codes['failed'],

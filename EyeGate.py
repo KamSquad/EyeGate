@@ -22,21 +22,14 @@ def auth_request():
     :return: auth result
     """
     # print('api/auth')
+    auth_answer = None
     content = request.json
-    auth_answer = thread.run(thread_function=auth_request_thread,
-                             args=content)
-    return auth_answer
-
-
-def auth_request_thread(content, queue_res):
-    """
-    Connect login microservice and get result in every thread
-    :param content:
-    :param queue_res:
-    :return:
-    """
     content = json.dumps(content).encode('utf-8')
-    sa.get_socket_answer(port=c.m_ports.auth, content=content, queue_object=queue_res)
+    try:
+        auth_answer = sa.get_socket_answer(port=c.m_ports.auth, content=content)
+    except:
+        pass
+    return auth_answer
 
 
 @app.route(c.routes.login, methods=['GET', 'POST'])
@@ -46,21 +39,14 @@ def login_request():
     :return: auth result
     """
     # print('api/login')
+    auth_answer = None
     content = request.json
-    auth_answer = thread.run(thread_function=login_request_thread,
-                             args=content)
-    return auth_answer
-
-
-def login_request_thread(content, queue_res):
-    """
-    Connect login microservice and get result in every thread
-    :param content:
-    :param queue_res:
-    :return:
-    """
     content = json.dumps(content).encode('utf-8')
-    sa.get_socket_answer(port=c.m_ports.login, content=content, queue_object=queue_res)
+    try:
+        auth_answer = sa.get_socket_answer(port=c.m_ports.login, content=content)
+    except:
+        pass
+    return auth_answer
 
 
 @app.route(c.routes.push, methods=['GET', 'POST'])
@@ -70,21 +56,14 @@ def push_request():
     :return: push server result
     """
     # print('api/push')
+    auth_answer = None
     content = request.json
-    auth_answer = thread.run(thread_function=push_request_thread,
-                             args=content)
-    return auth_answer
-
-
-def push_request_thread(content, queue_res):
-    """
-    Connect login microservice and get result in every thread
-    :param content:
-    :param queue_res:
-    :return:
-    """
     content = json.dumps(content).encode('utf-8')
-    sa.get_socket_answer(port=c.m_ports.push, content=content, queue_object=queue_res)
+    try:
+        auth_answer = sa.get_socket_answer(port=c.m_ports.push, content=content)
+    except:
+        pass
+    return auth_answer
 
 
 @app.route(c.routes.news, methods=['GET', 'POST'])
@@ -94,21 +73,14 @@ def news_request():
     :return: push server result
     """
     # print('api/push')
+    auth_answer = None
     content = request.json
-    auth_answer = thread.run(thread_function=news_request_thread,
-                             args=content)
-    return auth_answer
-
-
-def news_request_thread(content, queue_res):
-    """
-    Connect login microservice and get result in every thread
-    :param content:
-    :param queue_res:
-    :return:
-    """
     content = json.dumps(content).encode('utf-8')
-    sa.get_socket_answer(port=c.m_ports.news, content=content, queue_object=queue_res, long_answer=True)
+    try:
+        auth_answer = sa.get_socket_answer(port=c.m_ports.news, content=content, long_answer=True)
+    except:
+        pass
+    return auth_answer
 
 
 # 1. ip:5000/register with json

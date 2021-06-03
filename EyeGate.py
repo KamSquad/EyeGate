@@ -3,7 +3,6 @@ from flask import Flask, request
 import json
 import bjoern
 from lib.network import socket_api as sa
-from lib import thread
 from lib import config
 
 app = Flask(__name__)

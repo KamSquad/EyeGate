@@ -25,7 +25,9 @@ def auth_request():
     content = request.json
     content = json.dumps(content).encode('utf-8')
     try:
-        auth_answer = sa.get_socket_answer(port=c.m_ports.auth, content=content)
+        auth_answer = sa.get_socket_answer(ip=c.gate.m_services_host,
+                                           port=c.m_ports.auth,
+                                           content=content)
     except:
         pass
     return auth_answer
@@ -42,7 +44,9 @@ def login_request():
     content = request.json
     content = json.dumps(content).encode('utf-8')
     try:
-        auth_answer = sa.get_socket_answer(port=c.m_ports.login, content=content)
+        auth_answer = sa.get_socket_answer(ip=c.gate.m_services_host,
+                                           port=c.m_ports.login,
+                                           content=content)
     except:
         pass
     return auth_answer
@@ -59,7 +63,9 @@ def push_request():
     content = request.json
     content = json.dumps(content).encode('utf-8')
     try:
-        auth_answer = sa.get_socket_answer(port=c.m_ports.push, content=content)
+        auth_answer = sa.get_socket_answer(ip=c.gate.m_services_host,
+                                           port=c.m_ports.push,
+                                           content=content)
     except:
         pass
     return auth_answer
@@ -76,7 +82,10 @@ def news_request():
     content = request.json
     content = json.dumps(content).encode('utf-8')
     try:
-        auth_answer = sa.get_socket_answer(port=c.m_ports.news, content=content, long_answer=True)
+        auth_answer = sa.get_socket_answer(ip=c.gate.m_services_host,
+                                           port=c.m_ports.news,
+                                           content=content,
+                                           long_answer=True)
     except:
         pass
     return auth_answer

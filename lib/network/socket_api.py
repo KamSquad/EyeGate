@@ -72,6 +72,7 @@ def get_socket_answer(port, content, ip='127.0.0.1', queue_object=None, long_ans
     resp = None
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
+        print(ip, port)
         client.connect((ip, port))
         # send request
         client.send(content)

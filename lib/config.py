@@ -13,9 +13,10 @@ class EnvConfig:
             load_dotenv('.env')
         except:
             load_dotenv('../.env')
-        self.gate = namedtuple('gate', 'allowed_hosts port')
+        self.gate = namedtuple('gate', 'allowed_hosts port m_services_host')
         self.gate.allowed_hosts = str(os.environ.get("GATE_ALLOWED_HOSTS", default="127.0.0.1"))
         self.gate.port = int(os.environ.get("GATE_PORT", default=5000))
+        self.gate.m_services_host = str(os.environ.get("GATE_M_SERVICES_HOST", default="127.0.0.1"))
 
         self.routes = namedtuple('routes', 'status auth news login push')
         self.routes.status = str(os.environ.get("ROUTES_STATUS", default="/status"))

@@ -66,7 +66,7 @@ def get_socket_answer(port, content, ip='127.0.0.1', queue_object=None, long_ans
     :param ip: microservice ip address
     :type content: bytes
     :param content: content to send
-    :type queue.Queue() object
+    :type queue_object Queue() object
     :param queue_object: queue object to put answer
     """
     resp = None

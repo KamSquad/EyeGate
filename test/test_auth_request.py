@@ -1,9 +1,8 @@
-import sys
 import requests
 import json
+import time
 
-
-token = sys.argv[1]
+server_ip, token = input().split()
 
 
 def run_test(usr_token):
@@ -22,11 +21,13 @@ def run_test(usr_token):
              auth_request_token_success]
 
     for test_request in tests:
-        try:
-            response = requests.get('http://127.0.0.1:5000/api/auth', json=test_request)
+        try:  # Test Flask: 127.0.0.1:5000
+            t1 = time.time()
+            response = requests.get(f'http://{server_ip}/api/auth', json=test_request)
+            t2 = time.time()
             response = response.content.decode('utf-8')
             response_json = json.loads(response)
-            print(test_request, response_json)
+            print(f'Response time: {t2 - t1:5.4f} | {test_request} | {response_json}')
             # print()
         except Exception as ex:
             print(ex)

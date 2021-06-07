@@ -9,10 +9,8 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 # install dependencies
 RUN pip install --upgrade pip
-RUN apt update -y && apt install -y libev-dev
+RUN apt update -y && apt install -y libev-dev netcat
 # copy project
 RUN git clone https://github.com/KamSquad/EyeGate.git .
 # COPY requirements.txt .
 RUN pip install -r ./requirements.txt
-# set env
-COPY .env .

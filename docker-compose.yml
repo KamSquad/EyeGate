@@ -1,11 +1,20 @@
 version: '3.7'
+
 services:
-  web:
+  eyegate:
+    image: eyegate:1.0
     build: .
     command: python EyeGate.py
-    ports:
-      - 8080:8080
-      - 80:80
+    network_mode: host
+    restart: always
+    env_file:
+      - ./.env
+
+  dresscoder:
+    image: dresscoder:1.0
+    build: .
+    command: python DressCoder.py
+    network_mode: host
     restart: always
     env_file:
       - ./.env
